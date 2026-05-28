@@ -1126,65 +1126,96 @@ class _SalaryTrackerScreenState extends State<SalaryTrackerScreen> with SingleTi
 
                             return Column(
                               children: [
-                                LayoutBuilder(
-                                  builder: (context, constraints) {
-                                    return Stack(
-                                      children: [
-                                        // Background Track
-                                        Container(
-                                          height: 24,
-                                          width: double.infinity,
-                                          decoration: BoxDecoration(
-                                            color: colorScheme.onSurface.withValues(alpha: 0.05),
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                        ),
-                                        // Expense Zone (Red)
-                                        Container(
-                                          height: 24,
-                                          width: constraints.maxWidth * expRatio,
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFFEF4444).withValues(alpha: 0.2),
-                                            borderRadius: BorderRadius.horizontal(
-                                              left: const Radius.circular(12),
-                                              right: expRatio >= 1.0 ? const Radius.circular(12) : Radius.zero,
+                                Column(
+                                  children: [
+                                    LayoutBuilder(
+                                      builder: (context, constraints) {
+                                        return Column(
+                                          children: [
+                                            // Labels Row
+                                            Padding(
+                                              padding: const EdgeInsets.only(bottom: 8),
+                                              child: Stack(
+                                                children: [
+                                                  const SizedBox(height: 14, width: double.infinity),
+                                                  if (expRatio > 0.1 && expRatio < 0.9)
+                                                    Positioned(
+                                                      left: constraints.maxWidth * expRatio - 30,
+                                                      child: const Text(
+                                                        "EXPENSES",
+                                                        style: TextStyle(fontSize: 8, fontWeight: FontWeight.w900, color: Color(0xFFEF4444), letterSpacing: 0.5),
+                                                      ),
+                                                    ),
+                                                  const Positioned(
+                                                    right: 0,
+                                                    child: Text(
+                                                      "FULL GAJI",
+                                                      style: TextStyle(fontSize: 8, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                        ),
-                                        // Earnings Progress (Green)
-                                        Container(
-                                          height: 24,
-                                          width: constraints.maxWidth * earnRatio,
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: [colorScheme.primary, colorScheme.primary.withBlue(200)],
-                                            ),
-                                            borderRadius: BorderRadius.circular(12),
-                                            boxShadow: [
-                                              if (earnRatio > 0)
-                                                BoxShadow(
-                                                  color: colorScheme.primary.withValues(alpha: 0.3),
-                                                  blurRadius: 10,
-                                                  offset: const Offset(0, 2),
+                                            Stack(
+                                              clipBehavior: Clip.none,
+                                              children: [
+                                                // Background Track
+                                                Container(
+                                                  height: 24,
+                                                  width: double.infinity,
+                                                  decoration: BoxDecoration(
+                                                    color: colorScheme.onSurface.withValues(alpha: 0.05),
+                                                    borderRadius: BorderRadius.circular(12),
+                                                  ),
                                                 ),
-                                            ],
-                                          ),
-                                        ),
-                                        // Expense Marker
-                                        if (expRatio > 0 && expRatio < 1.0)
-                                          Positioned(
-                                            left: constraints.maxWidth * expRatio - 1,
-                                            child: Container(
-                                              width: 2,
-                                              height: 24,
-                                              color: const Color(0xFFEF4444),
+                                                // Expense Zone (Red Shading)
+                                                Container(
+                                                  height: 24,
+                                                  width: constraints.maxWidth * expRatio,
+                                                  decoration: BoxDecoration(
+                                                    color: const Color(0xFFEF4444).withValues(alpha: 0.15),
+                                                    borderRadius: BorderRadius.horizontal(
+                                                      left: const Radius.circular(12),
+                                                      right: expRatio >= 1.0 ? const Radius.circular(12) : Radius.zero,
+                                                    ),
+                                                  ),
+                                                ),
+                                                // Earnings Progress (Green)
+                                                Container(
+                                                  height: 24,
+                                                  width: constraints.maxWidth * earnRatio,
+                                                  decoration: BoxDecoration(
+                                                    gradient: LinearGradient(
+                                                      colors: [colorScheme.primary, colorScheme.primary.withBlue(200)],
+                                                    ),
+                                                    borderRadius: BorderRadius.circular(12),
+                                                    boxShadow: [
+                                                      if (earnRatio > 0)
+                                                        BoxShadow(
+                                                          color: colorScheme.primary.withValues(alpha: 0.3),
+                                                          blurRadius: 10,
+                                                          offset: const Offset(0, 2),
+                                                        ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                // Expense Break-even Marker
+                                                if (expRatio > 0 && expRatio < 1.0)
+                                                  Positioned(
+                                                    left: constraints.maxWidth * expRatio - 1,
+                                                    child: Container(
+                                                      width: 2,
+                                                      height: 24,
+                                                      color: const Color(0xFFEF4444),
+                                                    ),
+                                                  ),
+                                              ],
                                             ),
-                                          ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                                const SizedBox(height: 16),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                    const SizedBox(height: 16),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [

@@ -1217,9 +1217,10 @@ class _SalaryTrackerScreenState extends State<SalaryTrackerScreen> with SingleTi
                                   ],
                                 ),
                                 if (amountEarned >= totalExpenses && totalExpenses > 0)
-                                  Container(
-                                    margin: const EdgeInsets.top(12),
-                                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                                 Container(
+                                   margin: const EdgeInsets.only(top: 12),
+                                   padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+
                                     decoration: BoxDecoration(
                                       color: colorScheme.primary.withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(12),

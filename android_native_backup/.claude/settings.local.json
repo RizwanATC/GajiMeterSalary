@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p \"C:/Users/USER/Downloads/GajiMeterSalaryTracker/GajiMeterSalaryTracker/gradle/wrapper\")",
+      "Bash(cp \"C:/Users/USER/AndroidStudioProjects/MyApplication4/gradle/wrapper/gradle-wrapper.jar\" \"C:/Users/USER/Downloads/GajiMeterSalaryTracker/GajiMeterSalaryTracker/gradle/wrapper/gradle-wrapper.jar\")",
+      "Bash(JAVA_HOME=\"C:/Program Files/Android/Android Studio1/jbr\" ./gradlew assembleDebug --no-daemon)"
+    ]
+  }
+}

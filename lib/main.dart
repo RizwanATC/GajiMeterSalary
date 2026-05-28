@@ -72,6 +72,7 @@ class _MainScaffoldState extends State<MainScaffold> {
   int _sessionStartMillis = 0;
   bool _isTracking = false;
   List<WorkSession> _history = [];
+  List<Expense> _expenses = [];
 
   @override
   void initState() {
@@ -138,6 +139,7 @@ class _MainScaffoldState extends State<MainScaffold> {
     final savedSessionStart = prefs.getInt('sessionStartMillis');
     final savedIsTracking = prefs.getBool('isTracking') ?? false;
     final savedHistoryJson = prefs.getString('history');
+    final savedExpensesJson = prefs.getString('expenses');
 
     if (mounted) {
       setState(() {
@@ -152,6 +154,13 @@ class _MainScaffoldState extends State<MainScaffold> {
           try {
             final List<dynamic> decoded = jsonDecode(savedHistoryJson);
             _history = decoded.map((item) => WorkSession.fromJson(item)).toList();
+          } catch (_) {}
+        }
+
+        if (savedExpensesJson != null) {
+          try {
+            final List<dynamic> decoded = jsonDecode(savedExpensesJson);
+            _expenses = decoded.map((item) => Expense.fromJson(item)).toList();
           } catch (_) {}
         }
         
@@ -171,6 +180,7 @@ class _MainScaffoldState extends State<MainScaffold> {
     bool? isTracking,
     int? sessionStart,
     List<WorkSession>? history,
+    List<Expense>? expenses,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('salary', _salaryController.text);
@@ -180,9 +190,15 @@ class _MainScaffoldState extends State<MainScaffold> {
     if (currentElapsed != null) await prefs.setInt('savedElapsedMillis', currentElapsed);
     if (sessionStart != null) await prefs.setInt('sessionStartMillis', sessionStart);
     if (isTracking != null) await prefs.setBool('isTracking', isTracking);
+    
     if (history != null) {
       await prefs.setString('history', jsonEncode(history.map((e) => e.toJson()).toList()));
       setState(() => _history = history);
+    }
+
+    if (expenses != null) {
+      await prefs.setString('expenses', jsonEncode(expenses.map((e) => e.toJson()).toList()));
+      setState(() => _expenses = expenses);
     }
 
     setState(() {
@@ -201,6 +217,11 @@ class _MainScaffoldState extends State<MainScaffold> {
     );
     final updatedHistory = [newSession, ..._history];
     _saveGlobalData(history: updatedHistory);
+  }
+
+  void _addExpense(Expense expense) {
+    final updatedExpenses = [expense, ..._expenses];
+    _saveGlobalData(expenses: updatedExpenses);
   }
 
   @override
@@ -267,6 +288,11 @@ class _MainScaffoldState extends State<MainScaffold> {
         ),
         onSessionEnd: _addToHistory,
       ),
+      ExpenseScreen(
+        expenses: _expenses,
+        onAdd: _addExpense,
+        onClear: () => _saveGlobalData(expenses: []),
+      ),
       HistoryScreen(history: _history, onClear: () => _saveGlobalData(history: [])),
     ];
 
@@ -330,14 +356,314 @@ class GlassBottomNavBar extends StatelessWidget {
                     onTap: () => onItemSelected(0),
                   ),
                   _NavBarItem(
-                    icon: Icons.history_rounded,
-                    label: "History",
+                    icon: Icons.receipt_long_rounded,
+                    label: "Expenses",
                     isSelected: selectedIndex == 1,
                     onTap: () => onItemSelected(1),
+                  ),
+                  _NavBarItem(
+                    icon: Icons.history_rounded,
+                    label: "History",
+                    isSelected: selectedIndex == 2,
+                    onTap: () => onItemSelected(2),
                   ),
                 ],
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ExpenseScreen extends StatelessWidget {
+  final List<Expense> expenses;
+  final Function(Expense) onAdd;
+  final VoidCallback onClear;
+
+  const ExpenseScreen({super.key, required this.expenses, required this.onAdd, required this.onClear});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+    final currencyFormat = NumberFormat.currency(symbol: "RM ", decimalDigits: 2);
+
+    double totalExpenses = expenses.fold(0, (sum, item) => sum + item.amount);
+
+    return Scaffold(
+      backgroundColor: isDark ? const Color(0xFF020617) : const Color(0xFFF8FAFC),
+      body: Stack(
+        children: [
+          Positioned(
+            top: -50,
+            left: -50,
+            child: RepaintBoundary(
+              child: Container(
+                width: 250,
+                height: 250,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFF3B82F6).withValues(alpha: isDark ? 0.08 : 0.05),
+                ),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Expenses", style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: -1.5)),
+                          Text("Track your spending", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w500)),
+                        ],
+                      ),
+                      if (expenses.isNotEmpty)
+                        IconButton(
+                          icon: const Icon(Icons.delete_sweep_rounded),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text("Clear Expenses?"),
+                                content: const Text("This will permanently delete all expense records."),
+                                actions: [
+                                  TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+                                  TextButton(
+                                    onPressed: () {
+                                      onClear();
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("Clear", style: TextStyle(color: Colors.red)),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                    ],
+                  ),
+                ),
+                
+                // Total Expenses Summary Card
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF3B82F6), Color(0xFF2563EB)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF3B82F6).withValues(alpha: 0.3),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.account_balance_wallet_rounded, color: Colors.white, size: 32),
+                      const SizedBox(width: 20),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "TOTAL SPENDING",
+                            style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w700, fontSize: 10, letterSpacing: 1.2),
+                          ),
+                          Text(
+                            currencyFormat.format(totalExpenses),
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 24),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                Expanded(
+                  child: expenses.isEmpty
+                      ? const Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.receipt_long_rounded, size: 64, color: Colors.grey),
+                              SizedBox(height: 16),
+                              Text("No expenses yet", style: TextStyle(color: Colors.grey)),
+                            ],
+                          ),
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.fromLTRB(24, 16, 24, 120),
+                          itemCount: expenses.length,
+                          itemBuilder: (context, index) {
+                            final expense = expenses[index];
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 16),
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: isDark ? const Color(0xFF0F172A) : Colors.white,
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(color: colorScheme.onSurface.withValues(alpha: 0.05)),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF3B82F6).withValues(alpha: 0.1),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(Icons.shopping_bag_outlined, color: Color(0xFF3B82F6)),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          expense.description,
+                                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                                        ),
+                                        Text(
+                                          "${expense.category} • ${DateFormat('MMM dd').format(expense.date)}",
+                                          style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Text(
+                                    currencyFormat.format(expense.amount),
+                                    style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xFFEF4444)),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            bottom: 110,
+            right: 24,
+            child: FloatingActionButton.extended(
+              onPressed: () => _showAddExpenseDialog(context, onAdd),
+              backgroundColor: const Color(0xFF3B82F6),
+              icon: const Icon(Icons.add_rounded, color: Colors.white),
+              label: const Text("ADD EXPENSE", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, letterSpacing: 0.5)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddExpenseDialog(BuildContext context, Function(Expense) onAdd) {
+    final descController = TextEditingController();
+    final amountController = TextEditingController();
+    String selectedCategory = "Food";
+    final categories = ["Food", "Transport", "Rent", "Utilities", "Leisure", "Other"];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Container(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            left: 24,
+            right: 24,
+            top: 24,
+          ),
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "New Expense",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+              ),
+              const SizedBox(height: 24),
+              TextField(
+                controller: descController,
+                decoration: InputDecoration(
+                  labelText: "Description",
+                  filled: true,
+                  fillColor: Colors.grey.withValues(alpha: 0.1),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: amountController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: "Amount (RM)",
+                  filled: true,
+                  fillColor: Colors.grey.withValues(alpha: 0.1),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text("Category", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                children: categories.map((cat) => ChoiceChip(
+                  label: Text(cat),
+                  selected: selectedCategory == cat,
+                  onSelected: (selected) {
+                    if (selected) setModalState(() => selectedCategory = cat);
+                  },
+                )).toList(),
+              ),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final desc = descController.text;
+                    final amount = double.tryParse(amountController.text) ?? 0.0;
+                    if (desc.isNotEmpty && amount > 0) {
+                      onAdd(Expense(
+                        date: DateTime.now(),
+                        category: selectedCategory,
+                        description: desc,
+                        amount: amount,
+                      ));
+                      Navigator.pop(context);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF3B82F6),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  ),
+                  child: const Text("SAVE EXPENSE", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
+                ),
+              ),
+              const SizedBox(height: 32),
+            ],
           ),
         ),
       ),
@@ -1311,5 +1637,28 @@ class WorkSession {
         date: DateTime.parse(json['date']),
         amount: json['amount'],
         durationMillis: json['durationMillis'],
+      );
+}
+
+class Expense {
+  final DateTime date;
+  final String category;
+  final String description;
+  final double amount;
+
+  Expense({required this.date, required this.category, required this.description, required this.amount});
+
+  Map<String, dynamic> toJson() => {
+        'date': date.toIso8601String(),
+        'category': category,
+        'description': description,
+        'amount': amount,
+      };
+
+  factory Expense.fromJson(Map<String, dynamic> json) => Expense(
+        date: DateTime.parse(json['date']),
+        category: json['category'],
+        description: json['description'],
+        amount: json['amount'],
       );
 }

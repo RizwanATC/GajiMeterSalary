@@ -281,6 +281,7 @@ class _MainScaffoldState extends State<MainScaffold> {
         initialSavedMillis: _savedElapsedMillis,
         initialSessionStart: _sessionStartMillis,
         initialIsTracking: _isTracking,
+        totalExpenses: _expenses.fold(0.0, (sum, item) => sum + item.amount),
         onSave: (elapsed, isTracking, start) => _saveGlobalData(
           currentElapsed: elapsed,
           isTracking: isTracking,
@@ -733,6 +734,7 @@ class SalaryTrackerScreen extends StatefulWidget {
   final int initialSavedMillis;
   final int initialSessionStart;
   final bool initialIsTracking;
+  final double totalExpenses;
   final Function(int, bool, int) onSave;
   final Function(double, int) onSessionEnd;
 
@@ -744,6 +746,7 @@ class SalaryTrackerScreen extends StatefulWidget {
     required this.initialSavedMillis,
     required this.initialSessionStart,
     required this.initialIsTracking,
+    required this.totalExpenses,
     required this.onSave,
     required this.onSessionEnd,
   });
@@ -1077,6 +1080,173 @@ class _SalaryTrackerScreenState extends State<SalaryTrackerScreen> with SingleTi
                         ),
                       ),
                     ],
+                  ),
+                  
+                  const SizedBox(height: 24),
+
+                  // NEW: Monthly Salary Progress Card with Expenses
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF0F172A) : Colors.white,
+                      borderRadius: BorderRadius.circular(32),
+                      border: Border.all(color: colorScheme.onSurface.withValues(alpha: 0.05)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "MONTHLY OUTLOOK",
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                letterSpacing: 1.2,
+                                fontWeight: FontWeight.w800,
+                                color: colorScheme.onSurface.withValues(alpha: 0.4),
+                              ),
+                            ),
+                            Icon(Icons.insights_rounded, size: 16, color: colorScheme.primary.withValues(alpha: 0.5)),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        ValueListenableBuilder<int>(
+                          valueListenable: _currentMillisNotifier,
+                          builder: (context, now, _) {
+                            final elapsed = _isTracking 
+                              ? _savedElapsedMillis + (now - _sessionStartMillis).clamp(0, double.infinity).toInt()
+                              : _savedElapsedMillis;
+                            final amountEarned = _calculateEarnedAmount(elapsed);
+                            final totalSalary = double.tryParse(widget.salaryController.text) ?? 1.0;
+                            final totalExpenses = widget.totalExpenses;
+
+                            final expRatio = (totalExpenses / totalSalary).clamp(0.0, 1.0);
+                            final earnRatio = (amountEarned / totalSalary).clamp(0.0, 1.0);
+
+                            return Column(
+                              children: [
+                                LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    return Stack(
+                                      children: [
+                                        // Background Track
+                                        Container(
+                                          height: 24,
+                                          width: double.infinity,
+                                          decoration: BoxDecoration(
+                                            color: colorScheme.onSurface.withValues(alpha: 0.05),
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                        ),
+                                        // Expense Zone (Red)
+                                        Container(
+                                          height: 24,
+                                          width: constraints.maxWidth * expRatio,
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFEF4444).withValues(alpha: 0.2),
+                                            borderRadius: BorderRadius.horizontal(
+                                              left: const Radius.circular(12),
+                                              right: expRatio >= 1.0 ? const Radius.circular(12) : Radius.zero,
+                                            ),
+                                          ),
+                                        ),
+                                        // Earnings Progress (Green)
+                                        Container(
+                                          height: 24,
+                                          width: constraints.maxWidth * earnRatio,
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [colorScheme.primary, colorScheme.primary.withBlue(200)],
+                                            ),
+                                            borderRadius: BorderRadius.circular(12),
+                                            boxShadow: [
+                                              if (earnRatio > 0)
+                                                BoxShadow(
+                                                  color: colorScheme.primary.withValues(alpha: 0.3),
+                                                  blurRadius: 10,
+                                                  offset: const Offset(0, 2),
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                        // Expense Marker
+                                        if (expRatio > 0 && expRatio < 1.0)
+                                          Positioned(
+                                            left: constraints.maxWidth * expRatio - 1,
+                                            child: Container(
+                                              width: 2,
+                                              height: 24,
+                                              color: const Color(0xFFEF4444),
+                                            ),
+                                          ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 16),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Earnings",
+                                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: colorScheme.primary),
+                                        ),
+                                        Text(
+                                          currencyFormat.format(amountEarned),
+                                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+                                        ),
+                                      ],
+                                    ),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          "Expenses",
+                                          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Color(0xFFEF4444)),
+                                        ),
+                                        Text(
+                                          currencyFormat.format(totalExpenses),
+                                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                if (amountEarned >= totalExpenses && totalExpenses > 0)
+                                  Container(
+                                    margin: const EdgeInsets.top(12),
+                                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.primary.withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.celebration_rounded, size: 14, color: colorScheme.primary),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          "BREAK-EVEN ACHIEVED!",
+                                          style: TextStyle(
+                                            fontSize: 9, 
+                                            fontWeight: FontWeight.w900, 
+                                            color: colorScheme.primary,
+                                            letterSpacing: 0.5,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                              ],
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                   
                   const SizedBox(height: 32),

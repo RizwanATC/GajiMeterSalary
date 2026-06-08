@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math' show pi;
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -936,6 +937,22 @@ class _MainScaffoldState extends State<MainScaffold> {
     });
   }
 
+  void _showAddExpenseFromNav() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddExpenseScreen(
+          onAdd: _onAddOrUpdateExpense,
+          onDelete: (index) {
+            final updatedExpenses = List<Expense>.from(_expenses)..removeAt(index);
+            _saveGlobalData(expenses: updatedExpenses);
+          },
+          expenses: _expenses,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -1029,12 +1046,6 @@ class _MainScaffoldState extends State<MainScaffold> {
         ),
         onSessionEnd: _addToHistory,
       ),
-      HistoryScreen(
-        history: _history,
-        expenses: _expenses,
-        salary: salary,
-        onClear: () => _saveGlobalData(history: []),
-      ),
       ExpenseScreen(
         expenses: _expenses,
         salary: salary,
@@ -1049,6 +1060,12 @@ class _MainScaffoldState extends State<MainScaffold> {
           _saveGlobalData(expenses: updatedExpenses);
         },
         onClear: () => _saveGlobalData(expenses: []),
+      ),
+      HistoryScreen(
+        history: _history,
+        expenses: _expenses,
+        salary: salary,
+        onClear: () => _saveGlobalData(history: []),
       ),
       SettingsScreen(
         themeIndex: widget.themeIndex,
@@ -1074,9 +1091,19 @@ class _MainScaffoldState extends State<MainScaffold> {
 
     return Scaffold(
       extendBody: true,
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: screens,
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.transparent,
+      body: MediaQuery(
+        // Strip the nav-bar height from padding so inner Scaffolds fill the
+        // full height — content then naturally scrolls behind the glass bar.
+        data: MediaQuery.of(context).copyWith(
+          padding: MediaQuery.of(context).padding.copyWith(bottom: 0),
+          viewPadding: MediaQuery.of(context).viewPadding.copyWith(bottom: 0),
+        ),
+        child: IndexedStack(
+          index: _selectedIndex,
+          children: screens,
+        ),
       ),
       bottomNavigationBar: GlassBottomNavBar(
         selectedIndex: _selectedIndex,
@@ -1085,6 +1112,7 @@ class _MainScaffoldState extends State<MainScaffold> {
             _selectedIndex = index;
           });
         },
+        onAddExpense: _showAddExpenseFromNav,
       ),
     );
   }
@@ -1093,72 +1121,144 @@ class _MainScaffoldState extends State<MainScaffold> {
 class GlassBottomNavBar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onItemSelected;
+  final VoidCallback onAddExpense;
 
   const GlassBottomNavBar({
     super.key,
     required this.selectedIndex,
     required this.onItemSelected,
+    required this.onAddExpense,
   });
+
+  static const _purple = Color(0xFF5B4FCF);
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final lang = AppLang.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final glassBg = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.white.withValues(alpha: 0.30);
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.12)
+        : Colors.white.withValues(alpha: 0.6);
+    final shadowColor = isDark ? Colors.black54 : Colors.black.withValues(alpha: 0.10);
 
-    return Container(
-      margin: const EdgeInsets.fromLTRB(24, 0, 24, 32),
-      height: 72,
-      child: RepaintBoundary(
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(36),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-            child: Container(
-              decoration: BoxDecoration(
-                color: (isDark ? Colors.white : Colors.black).withValues(alpha: isDark ? 0.08 : 0.05),
-                borderRadius: BorderRadius.circular(36),
-                border: Border.all(
-                  color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.1),
-                  width: 1,
-                ),
-              ),
-              child: Builder(
-                builder: (context) {
-                  final lang = AppLang.of(context);
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _NavBarItem(
-                        icon: Icons.home_rounded,
+    // Material(transparent) removes the solid canvasColor Scaffold paints behind bottomNavigationBar
+    return Material(
+      color: Colors.transparent,
+      child: Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+      child: SizedBox(
+        height: 96,
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.bottomCenter,
+          children: [
+            // Floating glass nav bar
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(40),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                  child: Container(
+                    height: 72,
+                    decoration: BoxDecoration(
+                      color: glassBg,
+                      borderRadius: BorderRadius.circular(40),
+                      border: Border.all(color: borderColor, width: 1.2),
+                      boxShadow: [
+                        BoxShadow(color: shadowColor, blurRadius: 24, offset: const Offset(0, 4)),
+                      ],
+                    ),
+                    child: Row(
+                  children: [
+                    Expanded(
+                      child: _NavBarItem(
+                        icon: Icons.home_outlined,
+                        activeIcon: Icons.home_rounded,
                         label: lang.t('nav_home'),
                         isSelected: selectedIndex == 0,
                         onTap: () => onItemSelected(0),
                       ),
-                      _NavBarItem(
-                        icon: Icons.history_rounded,
-                        label: lang.t('nav_history'),
+                    ),
+                    Expanded(
+                      child: _NavBarItem(
+                        icon: Icons.account_balance_wallet_outlined,
+                        activeIcon: Icons.account_balance_wallet_rounded,
+                        label: lang.t('nav_money'),
                         isSelected: selectedIndex == 1,
                         onTap: () => onItemSelected(1),
                       ),
-                      _NavBarItem(
-                        icon: Icons.account_balance_wallet_rounded,
-                        label: lang.t('nav_money'),
+                    ),
+                    // Center gap for diamond button
+                    const Expanded(child: SizedBox()),
+                    Expanded(
+                      child: _NavBarItem(
+                        icon: Icons.history_rounded,
+                        activeIcon: Icons.history_rounded,
+                        label: lang.t('nav_history'),
                         isSelected: selectedIndex == 2,
                         onTap: () => onItemSelected(2),
                       ),
-                      _NavBarItem(
-                        icon: Icons.settings_rounded,
+                    ),
+                    Expanded(
+                      child: _NavBarItem(
+                        icon: Icons.settings_outlined,
+                        activeIcon: Icons.settings_rounded,
                         label: lang.t('nav_settings'),
                         isSelected: selectedIndex == 3,
                         onTap: () => onItemSelected(3),
                       ),
-                    ],
-                  );
-                },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
         ),
+            // Raised diamond Add Expense button
+            Positioned(
+              top: 0,
+              child: GestureDetector(
+                onTap: onAddExpense,
+                child: Transform.rotate(
+                  angle: pi / 4,
+                  child: Container(
+                    width: 58,
+                    height: 58,
+                    decoration: BoxDecoration(
+                      color: _purple,
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(
+                          color: _purple.withValues(alpha: 0.40),
+                          blurRadius: 24,
+                          spreadRadius: 0,
+                          offset: const Offset(0, 10),
+                        ),
+                        BoxShadow(
+                          color: _purple.withValues(alpha: 0.18),
+                          blurRadius: 8,
+                          spreadRadius: 0,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Transform.rotate(
+                      angle: -pi / 4,
+                      child: const Icon(Icons.add_rounded, color: Colors.white, size: 30),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
       ),
     );
   }
@@ -1547,6 +1647,7 @@ class _SetupWizardState extends State<SetupWizard> {
             borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
           ),
           child: SingleChildScrollView(
+            padding: const EdgeInsets.only(bottom: 120),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1741,6 +1842,24 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
   bool _showAllExpenses = false;
   static const int _visibleCount = 3;
 
+  final ScrollController _scrollController = ScrollController();
+  bool _scrolledPastHeader = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      final past = _scrollController.offset > 60;
+      if (past != _scrolledPastHeader) setState(() => _scrolledPastHeader = past);
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -1829,33 +1948,35 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(lang.t('expenses_title'), style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: -1.5)),
-                          Text(lang.t('expenses_subtitle'), style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w500)),
-                        ],
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.add_circle_outline_rounded, size: 28, color: colorScheme.primary),
-                        onPressed: () => _showAddExpenseDialog(context, widget.onAdd),
-                        tooltip: lang.t('add_expense'),
-                      ),
-                    ],
-                  ),
-                ),
-                
                 // Unified Pinned Card in Expenses Tab
                 Expanded(
                   child: SingleChildScrollView(
+                    controller: _scrollController,
                     padding: const EdgeInsets.only(bottom: 120),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // ── Header (scrolls away, replaced by glass overlay) ──
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 24, 16, 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(lang.t('expenses_title'), style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: -1.5)),
+                                  Text(lang.t('expenses_subtitle'), style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w500)),
+                                ],
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.add_circle_outline_rounded, size: 28, color: colorScheme.primary),
+                                onPressed: () => _showAddExpenseDialog(context, widget.onAdd),
+                                tooltip: lang.t('add_expense'),
+                              ),
+                            ],
+                          ),
+                        ),
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
@@ -1997,6 +2118,102 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
                   ),
                 ),
               ],
+            ),
+          ),
+          // ── Sticky glass header overlay for Money tab ──
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: AnimatedSlide(
+              duration: const Duration(milliseconds: 320),
+              curve: Curves.easeOutCubic,
+              offset: _scrolledPastHeader ? Offset.zero : const Offset(0, -1),
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 260),
+                opacity: _scrolledPastHeader ? 1.0 : 0.0,
+                child: ClipRect(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.08)
+                            : Colors.white.withValues(alpha: 0.30),
+                        border: Border(
+                          bottom: BorderSide(
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.10)
+                                : Colors.white.withValues(alpha: 0.60),
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                      child: SafeArea(
+                        bottom: false,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 12, 24, 14),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'TOTAL EXPENSE',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w700,
+                                      color: colorScheme.onSurface.withValues(alpha: 0.45),
+                                      letterSpacing: 1.1,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    currencyFormat.format(totalExpenses),
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w900,
+                                      color: Color(0xFFEF4444),
+                                      letterSpacing: -0.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'BALANCE ALLOCATION',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w700,
+                                      color: colorScheme.onSurface.withValues(alpha: 0.45),
+                                      letterSpacing: 1.1,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    currencyFormat.format((widget.salary - totalExpenses).clamp(0, double.infinity)),
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w900,
+                                      color: colorScheme.primary,
+                                      letterSpacing: -0.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -3053,50 +3270,51 @@ class _BudgetBucket {
 
 class _NavBarItem extends StatelessWidget {
   final IconData icon;
+  final IconData activeIcon;
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
 
   const _NavBarItem({
     required this.icon,
+    required this.activeIcon,
     required this.label,
     required this.isSelected,
     required this.onTap,
   });
 
+  static const _purple = Color(0xFF5B4FCF);
+  static const _inactive = Color(0xFF94A3B8);
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final color = isSelected ? _purple : _inactive;
 
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOutCubic,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: isSelected ? colorScheme.primary.withValues(alpha: 0.15) : Colors.transparent,
-              borderRadius: BorderRadius.circular(20),
-            ),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 220),
+            transitionBuilder: (child, anim) => ScaleTransition(scale: anim, child: child),
             child: Icon(
-              icon,
-              color: isSelected ? colorScheme.primary : colorScheme.onSurface.withValues(alpha: 0.4),
-              size: 26,
+              isSelected ? activeIcon : icon,
+              key: ValueKey(isSelected),
+              color: color,
+              size: 24,
             ),
           ),
           const SizedBox(height: 4),
           AnimatedDefaultTextStyle(
-            duration: const Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 220),
             style: TextStyle(
               fontSize: 10,
-              fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
-              color: isSelected ? colorScheme.primary : colorScheme.onSurface.withValues(alpha: 0.4),
-              letterSpacing: 0.5,
+              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+              color: color,
+              letterSpacing: 0.3,
             ),
             child: Text(label),
           ),
@@ -3164,6 +3382,8 @@ class _SalaryTrackerScreenState extends State<SalaryTrackerScreen> with SingleTi
   String _autoActionDate = '';
 
   late AnimationController _pulseController;
+  final ScrollController _scrollController = ScrollController();
+  bool _scrolledPastHeader = false;
 
   @override
   void initState() {
@@ -3176,6 +3396,11 @@ class _SalaryTrackerScreenState extends State<SalaryTrackerScreen> with SingleTi
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
+
+    _scrollController.addListener(() {
+      final past = _scrollController.offset > 72;
+      if (past != _scrolledPastHeader) setState(() => _scrolledPastHeader = past);
+    });
 
     if (_isTracking) {
       _startTimer();
@@ -3198,6 +3423,7 @@ class _SalaryTrackerScreenState extends State<SalaryTrackerScreen> with SingleTi
     _scheduleTimer?.cancel();
     _pulseController.dispose();
     _currentMillisNotifier.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -3469,6 +3695,7 @@ class _SalaryTrackerScreenState extends State<SalaryTrackerScreen> with SingleTi
           ),
           SafeArea(
             child: SingleChildScrollView(
+              controller: _scrollController,
               padding: const EdgeInsets.fromLTRB(20, 24, 20, 120),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -3774,7 +4001,7 @@ class _SalaryTrackerScreenState extends State<SalaryTrackerScreen> with SingleTi
                           ),
                           Expanded(
                             child: _buildStatItem(
-                              icon: Icons.savings_rounded,
+                              icon: Icons.diamond_rounded,
                               label: lang.t('left_this_month'),
                               value: currencyFormat.format(
                                 (_estimateNetSalary(double.tryParse(widget.salaryController.text) ?? 0) - widget.totalExpenses).clamp(0, double.infinity),
@@ -4005,6 +4232,82 @@ class _SalaryTrackerScreenState extends State<SalaryTrackerScreen> with SingleTi
                   const SizedBox(height: 24),
                   const AdMobBanner(),
                 ],
+              ),
+            ),
+          ),
+          // ── Sticky glass header overlay ──
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: AnimatedSlide(
+              duration: const Duration(milliseconds: 320),
+              curve: Curves.easeOutCubic,
+              offset: _scrolledPastHeader ? Offset.zero : const Offset(0, -1),
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 260),
+                opacity: _scrolledPastHeader ? 1.0 : 0.0,
+                child: ClipRect(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.08)
+                            : Colors.white.withValues(alpha: 0.30),
+                        border: Border(
+                          bottom: BorderSide(
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.10)
+                                : Colors.white.withValues(alpha: 0.60),
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                      child: SafeArea(
+                        bottom: false,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 12, 24, 14),
+                          child: ValueListenableBuilder<int>(
+                            valueListenable: _currentMillisNotifier,
+                            builder: (_, now, __) {
+                              final elapsed = _isTracking
+                                  ? _savedElapsedMillis + (now - _sessionStartMillis).clamp(0, 999999999)
+                                  : _savedElapsedMillis;
+                              final earned = _calculateEarnedAmount(elapsed);
+                              final fmt = NumberFormat.currency(symbol: 'RM ', decimalDigits: 2);
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    lang.t('label_earned_session'),
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w700,
+                                      color: colorScheme.onSurface.withValues(alpha: 0.45),
+                                      letterSpacing: 1.2,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    fmt.format(earned),
+                                    style: TextStyle(
+                                      fontSize: 26,
+                                      fontWeight: FontWeight.w900,
+                                      color: colorScheme.primary,
+                                      letterSpacing: -0.8,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
@@ -4446,6 +4749,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       backgroundColor: bg,
       body: SafeArea(
         child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           padding: const EdgeInsets.fromLTRB(24, 24, 24, 120),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -5816,7 +6120,7 @@ class _MoneyOverviewCard extends StatelessWidget {
             Row(children: [
               Expanded(child: _chip(label: lang.t('label_spend'),        value: fmt0.format(spend),  color: colorScheme.primary,    icon: Icons.shopping_bag_rounded, isDark: isDark)),
               const SizedBox(width: 8),
-              Expanded(child: _chip(label: lang.t('bucket_saving'),      value: fmt0.format(saving), color: const Color(0xFF10B981), icon: Icons.savings_rounded,      isDark: isDark)),
+              Expanded(child: _chip(label: lang.t('bucket_saving'),      value: fmt0.format(saving), color: const Color(0xFF10B981), icon: Icons.diamond_rounded,      isDark: isDark)),
               const SizedBox(width: 8),
               Expanded(child: _chip(label: lang.t('label_buffer'),       value: fmt0.format(buffer), color: const Color(0xFF6366F1), icon: Icons.shield_rounded,       isDark: isDark)),
             ]),

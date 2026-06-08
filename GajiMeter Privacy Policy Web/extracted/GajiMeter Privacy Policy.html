@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ms" class="lang-bm">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GajiMeter — Dasar Privasi / Privacy Policy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#15622B;
+  --green:#1F9E4A;
+  --emerald:#10B981;
+  --emerald-d:#0C9E6E;
+  --blue:#2F6FE4;
+  --blue-soft:#EEF4FE;
+  --gold:#E9A800;
+  --ink:#0F2018;
+  --text:#27332C;
+  --muted:#5F6E66;
+  --bg:#F3F8F2;
+  --card:#FFFFFF;
+  --line:#E4ECE5;
+  --line-2:#D4E0D6;
+  --shadow:0 1px 2px rgba(16,40,28,.05), 0 8px 24px rgba(16,40,28,.05);
+  --shadow-sm:0 1px 2px rgba(16,40,28,.06);
+  --radius:18px;
+  --maxw:1080px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  font-size:16.5px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+h1,h2,h3,.font-display{font-family:'Plus Jakarta Sans','Inter',sans-serif;}
+a{color:var(--blue);text-decoration:none;}
+a:hover{text-decoration:underline;}
+
+/* ---- language visibility ---- */
+.lang-en .bm{display:none !important;}
+.lang-bm .en{display:none !important;}
+
+/* ---- topbar ---- */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(255,255,255,.82);
+  backdrop-filter:saturate(140%) blur(12px);
+  -webkit-backdrop-filter:saturate(140%) blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-in{
+  max-width:var(--maxw);margin:0 auto;
+  padding:13px 22px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.wm{display:flex;align-items:center;gap:10px;font-family:'Plus Jakarta Sans';font-weight:800;font-size:20px;letter-spacing:-.02em;}
+.wm .gauge{width:26px;height:26px;flex:none;}
+.wm .g{color:var(--forest);}
+.wm .m{color:var(--green);}
+
+/* segmented language control */
+.seg{display:inline-flex;background:#EAF2EA;border:1px solid var(--line-2);border-radius:999px;padding:3px;gap:2px;}
+.seg button{
+  font-family:'Plus Jakarta Sans';font-weight:700;font-size:13px;letter-spacing:.01em;
+  border:0;background:transparent;color:var(--muted);
+  padding:6px 14px;border-radius:999px;cursor:pointer;transition:.18s;
+}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--forest);box-shadow:var(--shadow-sm);}
+.seg button:hover{color:var(--forest);}
+
+/* ---- hero ---- */
+.hero{position:relative;overflow:hidden;background:
+  radial-gradient(120% 120% at 50% -20%, #FFFFFF 0%, #FCFEFB 42%, var(--bg) 100%);
+  border-bottom:1px solid var(--line);}
+.hero-deco{position:absolute;inset:0;pointer-events:none;display:flex;justify-content:center;}
+.hero-deco svg{width:680px;max-width:140%;margin-top:-140px;opacity:.5;}
+.hero-in{position:relative;max-width:760px;margin:0 auto;padding:54px 22px 56px;text-align:center;}
+.hero-logo{width:160px;height:160px;object-fit:contain;margin:0 auto 6px;display:block;
+  filter:drop-shadow(0 10px 24px rgba(21,98,43,.14));}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font-family:'Plus Jakarta Sans';font-weight:700;
+  font-size:12px;letter-spacing:.11em;text-transform:uppercase;color:var(--emerald-d);white-space:nowrap;
+  background:#E7F7EF;border:1px solid #CFEEDF;padding:6px 14px;border-radius:999px;margin-bottom:18px;}
+.hero h1{font-size:clamp(34px,7vw,52px);line-height:1.04;letter-spacing:-.03em;color:var(--ink);margin:0 0 14px;font-weight:800;}
+.hero .lede{font-size:clamp(16px,2.4vw,18.5px);color:var(--muted);max-width:520px;margin:0 auto 26px;}
+.eff{display:inline-flex;align-items:center;gap:9px;font-size:14px;color:var(--text);
+  background:var(--card);border:1px solid var(--line-2);border-radius:999px;padding:8px 16px;box-shadow:var(--shadow-sm);}
+.eff .dot{width:8px;height:8px;border-radius:50%;background:var(--emerald);box-shadow:0 0 0 4px #D6F5E7;}
+
+/* trust strip */
+.trust{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:30px;}
+.trust .chip{
+  display:flex;align-items:center;gap:10px;text-align:left;
+  background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:12px 16px;box-shadow:var(--shadow-sm);min-width:0;
+}
+.trust .chip svg{width:22px;height:22px;flex:none;color:var(--emerald-d);}
+.trust .chip b{font-family:'Plus Jakarta Sans';font-weight:700;font-size:14px;color:var(--ink);display:block;line-height:1.25;}
+.trust .chip span{font-size:12.5px;color:var(--muted);}
+
+/* ---- layout ---- */
+.shell{max-width:var(--maxw);margin:0 auto;padding:40px 22px 30px;
+  display:grid;grid-template-columns:1fr;gap:30px;}
+@media(min-width:920px){
+  .shell{grid-template-columns:236px 1fr;gap:48px;padding-top:52px;align-items:start;}
+}
+
+/* TOC */
+.toc{position:relative;}
+@media(min-width:920px){.toc{position:sticky;top:84px;}}
+.toc h4{font-family:'Plus Jakarta Sans';font-weight:700;font-size:11.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 12px;padding-left:14px;}
+.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;}
+.toc a{display:flex;align-items:center;gap:11px;font-size:14px;color:var(--text);
+  padding:9px 14px;border-radius:11px;border-left:2px solid transparent;transition:.16s;font-weight:500;}
+.toc a:hover{background:#EAF2EA;text-decoration:none;}
+.toc a .num{font-family:'Plus Jakarta Sans';font-weight:700;font-size:12px;color:var(--muted);
+  width:20px;height:20px;border-radius:6px;background:#EAF2EA;display:grid;place-items:center;flex:none;transition:.16s;}
+.toc a.active{background:#E7F7EF;color:var(--forest);font-weight:600;}
+.toc a.active .num{background:var(--emerald);color:#fff;}
+@media(max-width:919px){
+  .toc{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 16px;box-shadow:var(--shadow-sm);}
+  .toc ol{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+}
+
+/* content */
+.content{min-width:0;}
+
+/* app info card */
+.appinfo{background:linear-gradient(160deg,#0F7A3A 0%,#0C6B33 55%,#0A5C2C 100%);
+  color:#EAF6EE;border-radius:var(--radius);padding:26px 26px 24px;margin-bottom:34px;
+  box-shadow:0 12px 30px rgba(12,107,51,.22);position:relative;overflow:hidden;}
+.appinfo::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;
+  border:24px solid rgba(255,255,255,.06);border-radius:50%;}
+.appinfo h2{font-size:13px;letter-spacing:.13em;text-transform:uppercase;color:#A9E3C2;margin:0 0 18px;font-weight:700;}
+.appinfo-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 26px;position:relative;}
+@media(max-width:560px){.appinfo-grid{grid-template-columns:1fr;}}
+.appinfo .k{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#92D6AE;margin-bottom:4px;font-weight:600;}
+.appinfo .v{font-family:'Plus Jakarta Sans';font-weight:700;font-size:18px;color:#fff;}
+.ph{color:#FFE9A8;border-bottom:1.5px dashed rgba(255,233,168,.55);font-weight:600;}
+
+/* section */
+.sec{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:30px 30px 28px;margin-bottom:22px;box-shadow:var(--shadow);scroll-margin-top:86px;}
+@media(max-width:560px){.sec{padding:24px 20px 22px;}}
+.sec-head{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+.sec-num{font-family:'Plus Jakarta Sans';font-weight:800;font-size:15px;color:#fff;background:var(--emerald);
+  width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none;box-shadow:0 4px 10px rgba(16,185,129,.3);}
+.sec h2{font-size:clamp(20px,3.4vw,25px);line-height:1.2;letter-spacing:-.02em;color:var(--ink);margin:0;font-weight:700;}
+.sec p{margin:0 0 14px;}
+.sec p:last-child{margin-bottom:0;}
+
+/* data table */
+.tbl-wrap{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:4px 0 18px;}
+table{width:100%;border-collapse:collapse;font-size:14.5px;}
+thead th{background:#F1F7F1;font-family:'Plus Jakarta Sans';font-weight:700;font-size:12.5px;
+  letter-spacing:.04em;text-transform:uppercase;color:var(--forest);text-align:left;padding:12px 16px;}
+tbody td{padding:13px 16px;border-top:1px solid var(--line);vertical-align:middle;}
+tbody tr:nth-child(even) td{background:#FAFCFA;}
+td .data-name{font-weight:600;color:var(--ink);}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:4px 10px;border-radius:999px;white-space:nowrap;}
+.tag-dev{background:#EAF2EA;color:#3C5A45;}
+.tag-no{background:#E7F7EF;color:#0C7A4E;}
+.tag-no::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--emerald);}
+@media(max-width:560px){
+  table,thead,tbody,tr,td{display:block;}
+  thead{display:none;}
+  tbody tr{border-top:1px solid var(--line);padding:6px 0;}
+  tbody tr:first-child{border-top:0;}
+  tbody td{border:0;padding:5px 16px;background:transparent !important;}
+  tbody td::before{content:attr(data-label);display:block;font-size:11px;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:1px;}
+}
+
+/* callout: local-first */
+.note{display:flex;gap:13px;background:#E7F7EF;border:1px solid #CDEEDD;border-radius:14px;padding:16px 18px;}
+.note svg{width:22px;height:22px;flex:none;color:var(--emerald-d);margin-top:1px;}
+.note p{margin:0;font-size:14.5px;color:#1B5236;}
+.note b{color:#0C5C38;}
+
+/* admob highlight */
+.sec.flag{border:1px solid #C9DCFB;box-shadow:0 1px 2px rgba(47,111,228,.06),0 10px 30px rgba(47,111,228,.10);}
+.sec.flag .sec-num{background:var(--blue);box-shadow:0 4px 10px rgba(47,111,228,.32);}
+.ribbon{display:inline-flex;align-items:center;gap:7px;font-family:'Plus Jakarta Sans';font-weight:700;
+  font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);
+  background:var(--blue-soft);border:1px solid #D4E3FB;padding:5px 11px;border-radius:999px;margin-bottom:14px;}
+.ribbon svg{width:14px;height:14px;}
+.collect-list{list-style:none;margin:6px 0 18px;padding:0;display:grid;gap:9px;}
+.collect-list li{display:flex;align-items:flex-start;gap:11px;font-size:15px;}
+.collect-list li svg{width:19px;height:19px;flex:none;color:var(--blue);margin-top:2px;}
+.optout{background:#F8FAFF;border:1px solid #DCE7FB;border-radius:14px;padding:18px 20px;margin-top:6px;}
+.optout .ol-head{display:flex;align-items:center;gap:9px;font-family:'Plus Jakarta Sans';font-weight:700;
+  font-size:14.5px;color:var(--ink);margin-bottom:12px;}
+.optout .ol-head svg{width:20px;height:20px;color:var(--blue);}
+.steps{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;font-weight:600;color:var(--ink);}
+.steps .step{background:#fff;border:1px solid #D4E3FB;border-radius:9px;padding:6px 12px;box-shadow:var(--shadow-sm);}
+.steps .arrow{color:var(--blue);font-weight:700;}
+
+/* permissions */
+.perm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:6px 0 18px;}
+.perm{display:flex;align-items:center;gap:10px;background:#FBF4F4;border:1px solid #F0DEDE;border-radius:12px;padding:11px 13px;font-size:14px;font-weight:600;color:#7A4A4A;}
+.perm svg{width:18px;height:18px;flex:none;color:#C0594F;}
+.allow{display:flex;align-items:center;gap:12px;background:#E7F7EF;border:1px solid #CDEEDD;border-radius:14px;padding:15px 18px;}
+.allow svg{width:24px;height:24px;flex:none;color:var(--emerald-d);}
+.allow b{font-family:'Plus Jakarta Sans';color:#0C5C38;}
+.allow p{margin:2px 0 0;font-size:14px;color:#2C5C44;}
+
+/* contact */
+.sec.contact{background:linear-gradient(165deg,#F4FBF6,#FFFFFF);}
+.contact-row{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:6px;}
+.mailbtn{display:inline-flex;align-items:center;gap:10px;background:var(--emerald);color:#fff;
+  font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px;padding:13px 22px;border-radius:12px;
+  box-shadow:0 6px 16px rgba(16,185,129,.32);transition:.18s;}
+.mailbtn:hover{background:var(--emerald-d);text-decoration:none;transform:translateY(-1px);box-shadow:0 9px 22px rgba(16,185,129,.36);}
+.mailbtn svg{width:19px;height:19px;}
+
+/* footer */
+.foot{border-top:1px solid var(--line);margin-top:24px;}
+.foot-in{max-width:var(--maxw);margin:0 auto;padding:34px 22px 46px;text-align:center;}
+.foot .wm{justify-content:center;font-size:18px;margin-bottom:14px;}
+.foot .tag-line{font-family:'Plus Jakarta Sans';font-weight:700;font-size:12px;letter-spacing:.22em;
+  color:var(--green);text-transform:uppercase;margin-bottom:10px;}
+.foot small{color:var(--muted);font-size:13.5px;}
+.foot .links{margin-top:8px;font-size:13.5px;}
+
+/* back to top */
+.totop{position:fixed;right:20px;bottom:20px;z-index:60;width:46px;height:46px;border-radius:50%;
+  background:var(--forest);color:#fff;border:0;cursor:pointer;display:grid;place-items:center;
+  box-shadow:0 8px 22px rgba(15,98,43,.34);opacity:0;transform:translateY(12px) scale(.9);
+  pointer-events:none;transition:.22s;}
+.totop.show{opacity:1;transform:none;pointer-events:auto;}
+.totop svg{width:20px;height:20px;}
+.totop:hover{background:#0E5527;}
+</style>
+</head>
+<body class="lang-bm">
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="wm">
+      <svg class="gauge" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <path d="M5 22a12 12 0 1 1 22 0" stroke="#15622B" stroke-width="3.2" stroke-linecap="round"/>
+        <path d="M16 18 24 11" stroke="#1F9E4A" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="16" cy="18" r="2.6" fill="#15622B"/>
+      </svg>
+      <span><span class="g">Gaji</span><span class="m">Meter</span></span>
+    </div>
+    <div class="seg" role="group" aria-label="Language / Bahasa">
+      <button id="lang-bm" aria-pressed="true" onclick="setLang('bm')">BM</button>
+      <button id="lang-en" aria-pressed="false" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-deco" aria-hidden="true">
+    <svg viewBox="0 0 600 360" fill="none">
+      <g stroke="#10B981" stroke-width="1.4" opacity="0.5">
+        <circle cx="300" cy="300" r="250"/>
+        <circle cx="300" cy="300" r="210" stroke-dasharray="2 14"/>
+      </g>
+      <g stroke="#3B82F6" stroke-width="1.2" opacity="0.28">
+        <circle cx="300" cy="300" r="178"/>
+      </g>
+    </svg>
+  </div>
+  <div class="hero-in">
+    <img class="hero-logo" src="assets/gajimeter-logo.png" alt="GajiMeter logo">
+    <span class="eyebrow">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/></svg>
+      <span class="bm">Privasi &amp; Kepercayaan</span><span class="en">Privacy &amp; Trust</span>
+    </span>
+    <h1><span class="bm">Dasar Privasi</span><span class="en">Privacy Policy</span></h1>
+    <p class="lede">
+      <span class="bm">Bagaimana GajiMeter mengendalikan — dan melindungi — maklumat anda. Ringkas, telus, dan disimpan pada peranti anda.</span>
+      <span class="en">How GajiMeter handles — and protects — your information. Simple, transparent, and stored on your device.</span>
+    </p>
+    <div class="eff">
+      <span class="dot"></span>
+      <span class="bm">Berkuat kuasa:</span><span class="en">Effective:</span>
+      &nbsp;<span class="ph">[Tarikh penerbitan / Publish date]</span>
+    </div>
+
+    <div class="trust">
+      <div class="chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <div><b><span class="bm">Pada peranti anda</span><span class="en">On your device</span></b><span><span class="bm">Tiada pelayan, tiada akaun</span><span class="en">No servers, no accounts</span></span></div>
+      </div>
+      <div class="chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 0 0 .5-9 6 6 0 0 0-11.4-1.6A4 4 0 0 0 6 19"/><path d="m2 2 20 20"/></svg>
+        <div><b><span class="bm">Tiada penyegerakan awan</span><span class="en">No cloud sync</span></b><span><span class="bm">Data tidak dimuat naik</span><span class="en">Data is never uploaded</span></span></div>
+      </div>
+      <div class="chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
+        <div><b><span class="bm">Gaji anda kekal peribadi</span><span class="en">Your salary stays private</span></b><span><span class="bm">Tidak dijual, tidak dikongsi</span><span class="en">Never sold or shared</span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SHELL -->
+<div class="shell">
+
+  <!-- TOC -->
+  <nav class="toc" aria-label="Sections">
+    <h4><span class="bm">Kandungan</span><span class="en">Contents</span></h4>
+    <ol>
+      <li><a href="#s1" data-sec="s1"><span class="num">1</span><span class="bm">Data Yang Kami Kumpul</span><span class="en">Data We Collect</span></a></li>
+      <li><a href="#s2" data-sec="s2"><span class="num">2</span><span class="bm">Cara Kami Guna Data</span><span class="en">How We Use Your Data</span></a></li>
+      <li><a href="#s3" data-sec="s3"><span class="num">3</span><span class="bm">Perkhidmatan Pihak Ketiga</span><span class="en">Third-Party Services</span></a></li>
+      <li><a href="#s4" data-sec="s4"><span class="num">4</span><span class="bm">Kebenaran</span><span class="en">Permissions</span></a></li>
+      <li><a href="#s5" data-sec="s5"><span class="num">5</span><span class="bm">Privasi Kanak-Kanak</span><span class="en">Children's Privacy</span></a></li>
+      <li><a href="#s6" data-sec="s6"><span class="num">6</span><span class="bm">Perubahan Dasar</span><span class="en">Changes to Policy</span></a></li>
+      <li><a href="#s7" data-sec="s7"><span class="num">7</span><span class="bm">Hubungi Kami</span><span class="en">Contact Us</span></a></li>
+    </ol>
+  </nav>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <!-- App info -->
+    <div class="appinfo">
+      <h2><span class="bm">Maklumat Aplikasi</span><span class="en">App Information</span></h2>
+      <div class="appinfo-grid">
+        <div><div class="k"><span class="bm">Nama Aplikasi</span><span class="en">App Name</span></div><div class="v">GajiMeter</div></div>
+        <div><div class="k"><span class="bm">Pembangun</span><span class="en">Developer</span></div><div class="v"><span class="ph">[Nama anda / syarikat]</span></div></div>
+        <div><div class="k"><span class="bm">Hubungi</span><span class="en">Contact</span></div><div class="v"><span class="ph">[your@email.com]</span></div></div>
+        <div><div class="k"><span class="bm">Berkuat Kuasa</span><span class="en">Effective</span></div><div class="v"><span class="ph">[Tarikh / Date]</span></div></div>
+      </div>
+    </div>
+
+    <!-- 1 Data we collect -->
+    <section class="sec" id="s1">
+      <div class="sec-head"><div class="sec-num">1</div>
+        <h2><span class="bm">Data Yang Kami Kumpul</span><span class="en">Data We Collect</span></h2></div>
+      <p><span class="bm">GajiMeter berfungsi sepenuhnya pada peranti anda. Maklumat di bawah disimpan secara setempat dan tidak pernah dihantar kepada kami.</span>
+         <span class="en">GajiMeter runs entirely on your device. The information below is stored locally and is never sent to us.</span></p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th><span class="bm">Data</span><span class="en">Data</span></th>
+            <th><span class="bm">Disimpan di mana</span><span class="en">Where stored</span></th>
+            <th><span class="bm">Dikongsi?</span><span class="en">Shared?</span></th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td data-label="Data"><span class="data-name"><span class="bm">Gaji bulanan</span><span class="en">Monthly salary</span></span></td>
+              <td data-label="Storage"><span class="tag tag-dev"><span class="bm">Peranti sahaja</span><span class="en">Device only</span></span></td>
+              <td data-label="Shared"><span class="tag tag-no"><span class="bm">Tidak</span><span class="en">No</span></span></td>
+            </tr>
+            <tr>
+              <td data-label="Data"><span class="data-name"><span class="bm">Tetapan waktu &amp; hari kerja</span><span class="en">Work hours &amp; work days</span></span></td>
+              <td data-label="Storage"><span class="tag tag-dev"><span class="bm">Peranti sahaja</span><span class="en">Device only</span></span></td>
+              <td data-label="Shared"><span class="tag tag-no"><span class="bm">Tidak</span><span class="en">No</span></span></td>
+            </tr>
+            <tr>
+              <td data-label="Data"><span class="data-name"><span class="bm">Tarikh gaji</span><span class="en">Payday date</span></span></td>
+              <td data-label="Storage"><span class="tag tag-dev"><span class="bm">Peranti sahaja</span><span class="en">Device only</span></span></td>
+              <td data-label="Shared"><span class="tag tag-no"><span class="bm">Tidak</span><span class="en">No</span></span></td>
+            </tr>
+            <tr>
+              <td data-label="Data"><span class="data-name"><span class="bm">Item perbelanjaan bulanan</span><span class="en">Monthly expense items</span></span></td>
+              <td data-label="Storage"><span class="tag tag-dev"><span class="bm">Peranti sahaja</span><span class="en">Device only</span></span></td>
+              <td data-label="Shared"><span class="tag tag-no"><span class="bm">Tidak</span><span class="en">No</span></span></td>
+            </tr>
+            <tr>
+              <td data-label="Data"><span class="data-name"><span class="bm">Sejarah sesi kerja</span><span class="en">Work session history</span></span></td>
+              <td data-label="Storage"><span class="tag tag-dev"><span class="bm">Peranti sahaja</span><span class="en">Device only</span></span></td>
+              <td data-label="Shared"><span class="tag tag-no"><span class="bm">Tidak</span><span class="en">No</span></span></td>
+            </tr>
+            <tr>
+              <td data-label="Data"><span class="data-name"><span class="bm">Tema &amp; pilihan bahasa</span><span class="en">Theme &amp; language preference</span></span></td>
+              <td data-label="Storage"><span class="tag tag-dev"><span class="bm">Peranti sahaja</span><span class="en">Device only</span></span></td>
+              <td data-label="Shared"><span class="tag tag-no"><span class="bm">Tidak</span><span class="en">No</span></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+        <p><span class="bm">Semua data pengguna disimpan secara setempat menggunakan <b>SharedPreferences</b>. GajiMeter <b>tiada pelayan, tiada akaun, dan tiada penyegerakan awan</b>. Kami tidak pernah memuat naik data gaji atau perbelanjaan anda ke mana-mana.</span>
+           <span class="en">All user data is stored locally using <b>SharedPreferences</b>. GajiMeter has <b>no servers, no accounts, and no cloud sync</b>. We never upload your salary or expense data anywhere.</span></p>
+      </div>
+    </section>
+
+    <!-- 2 How we use -->
+    <section class="sec" id="s2">
+      <div class="sec-head"><div class="sec-num">2</div>
+        <h2><span class="bm">Cara Kami Menggunakan Data Anda</span><span class="en">How We Use Your Data</span></h2></div>
+      <p><span class="bm">Data yang anda masukkan digunakan semata-mata untuk menjalankan ciri-ciri aplikasi pada peranti anda — mengira pendapatan masa nyata, menjejak perbelanjaan berbanding gaji, dan memaparkan sejarah sesi kerja anda.</span>
+         <span class="en">The data you enter is used solely to power the app's features on your device — calculating your real-time earnings, tracking expenses against your salary, and showing your work session history.</span></p>
+      <p><span class="bm">Oleh kerana ia tidak pernah meninggalkan telefon anda, ia hanya digunakan untuk memaparkan maklumat kembali kepada anda. <b>Kami tidak menganalisis, menjual, atau berkongsi data tersebut.</b></span>
+         <span class="en">Because it never leaves your phone, it is used only to display information back to you. <b>We do not analyse, sell, or share it.</b></span></p>
+    </section>
+
+    <!-- 3 AdMob -->
+    <section class="sec flag" id="s3">
+      <div class="ribbon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <span class="bm">Pendedahan penting untuk Google Play</span><span class="en">Key disclosure for Google Play</span>
+      </div>
+      <div class="sec-head"><div class="sec-num">3</div>
+        <h2><span class="bm">Perkhidmatan Pihak Ketiga (AdMob)</span><span class="en">Third-Party Services (AdMob)</span></h2></div>
+      <p><span class="bm">GajiMeter menggunakan <b>Google AdMob</b> untuk memaparkan iklan. AdMob mungkin mengumpul:</span>
+         <span class="en">GajiMeter uses <b>Google AdMob</b> to display advertisements. AdMob may collect:</span></p>
+      <ul class="collect-list">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6v6H9z"/></svg><span><span class="bm">ID Pengiklanan (GAID pada Android)</span><span class="en">Advertising ID (GAID on Android)</span></span></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg><span><span class="bm">Maklumat peranti (versi OS, model peranti)</span><span class="en">Device information (OS version, device model)</span></span></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg><span><span class="bm">Lokasi anggaran (peringkat negara/wilayah)</span><span class="en">Approximate location (country / region level)</span></span></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg><span><span class="bm">Data interaksi iklan (paparan, klik)</span><span class="en">Ad interaction data (views, clicks)</span></span></li>
+      </ul>
+      <p><span class="bm">Data ini dikumpul dan diproses oleh <b>Google LLC</b> di bawah dasar privasi mereka sendiri: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a>.</span>
+         <span class="en">This data is collected and processed by <b>Google LLC</b> under their own Privacy Policy: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a>.</span></p>
+      <div class="optout">
+        <div class="ol-head">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.3a2 2 0 0 1 3.4 0l.6 1a2 2 0 0 0 2 1l1.1-.1a2 2 0 0 1 1.7 3l-.5 1a2 2 0 0 0 0 2l.5 1a2 2 0 0 1-1.7 3l-1.1-.1a2 2 0 0 0-2 1l-.6 1a2 2 0 0 1-3.4 0l-.6-1a2 2 0 0 0-2-1l-1.1.1a2 2 0 0 1-1.7-3l.5-1a2 2 0 0 0 0-2l-.5-1a2 2 0 0 1 1.7-3l1.1.1a2 2 0 0 0 2-1z"/><circle cx="12" cy="12" r="2.5"/></svg>
+          <span class="bm">Tarik diri daripada iklan diperibadikan</span><span class="en">Opt out of personalized ads</span>
+        </div>
+        <div class="steps">
+          <span class="step">Settings</span><span class="arrow">→</span>
+          <span class="step">Google</span><span class="arrow">→</span>
+          <span class="step">Ads</span><span class="arrow">→</span>
+          <span class="step"><span class="bm">Tarik diri daripada Pemperibadian Iklan</span><span class="en">Opt out of Ads Personalization</span></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 Permissions -->
+    <section class="sec" id="s4">
+      <div class="sec-head"><div class="sec-num">4</div>
+        <h2><span class="bm">Kebenaran</span><span class="en">Permissions</span></h2></div>
+      <p><span class="bm">GajiMeter <b>tidak</b> meminta akses kepada mana-mana yang berikut:</span>
+         <span class="en">GajiMeter does <b>not</b> request access to any of the following:</span></p>
+      <div class="perm-grid">
+        <div class="perm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 2 20 20"/><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h2"/><path d="M9.5 9.5A3.5 3.5 0 0 0 12 15.5"/><path d="M22 18V9a2 2 0 0 0-2-2h-3"/></svg><span class="bm">Kamera</span><span class="en">Camera</span></div>
+        <div class="perm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 2 20 20"/><path d="M9 9v3a3 3 0 0 0 5.1 2.1M12 2a3 3 0 0 1 3 3v6"/><path d="M19 10v1a7 7 0 0 1-.7 3M5 10v1a7 7 0 0 0 7 7"/><path d="M12 19v3"/></svg><span class="bm">Mikrofon</span><span class="en">Microphone</span></div>
+        <div class="perm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 2 20 20"/><path d="M16 21v-2a4 4 0 0 0-3-3.85M9.5 5.5A4 4 0 0 1 15 9M2 21v-2a4 4 0 0 1 4-4h4"/></svg><span class="bm">Kenalan</span><span class="en">Contacts</span></div>
+        <div class="perm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 2 20 20"/><path d="M12 21s7-5.5 7-11a7 7 0 0 0-9.5-6.5"/><path d="M5.6 5.6A7 7 0 0 0 5 10c0 5.5 7 11 7 11"/></svg><span class="bm">Lokasi</span><span class="en">Location</span></div>
+        <div class="perm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 2 20 20"/><path d="M7 9h6M7 13h3"/><path d="M21 15V6a2 2 0 0 0-2-2H8M3 7v11a2 2 0 0 0 2 2h12"/></svg><span class="bm">SMS</span><span class="en">SMS</span></div>
+        <div class="perm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 2 20 20"/><path d="M14.05 6A5 5 0 0 1 18 9.95M13 3a9 9 0 0 1 6.8 5.6"/><path d="M21.5 16.9a2 2 0 0 1-.6 2.3 5 5 0 0 1-4.3 1.1C9.6 19.5 4.5 14.4 3.7 7.4a5 5 0 0 1 1.1-4.3"/></svg><span class="bm">Log panggilan</span><span class="en">Call logs</span></div>
+      </div>
+      <div class="allow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 0 20M12 2a15.3 15.3 0 0 0 0 20"/></svg>
+        <div><b><span class="bm">Satu-satunya kebenaran: Akses Internet</span><span class="en">The only permission used: Internet access</span></b>
+        <p><span class="bm">Diperlukan semata-mata untuk memuatkan iklan.</span><span class="en">Required solely to load advertisements.</span></p></div>
+      </div>
+    </section>
+
+    <!-- 5 Children -->
+    <section class="sec" id="s5">
+      <div class="sec-head"><div class="sec-num">5</div>
+        <h2><span class="bm">Privasi Kanak-Kanak</span><span class="en">Children's Privacy</span></h2></div>
+      <p><span class="bm">GajiMeter tidak ditujukan kepada kanak-kanak di bawah umur 13 tahun. Kami tidak mengumpul data daripada kanak-kanak secara sengaja.</span>
+         <span class="en">GajiMeter is not directed at children under 13. We do not knowingly collect data from children.</span></p>
+      <p><span class="bm">Jika anda percaya seorang kanak-kanak telah memberikan data kepada kami, sila hubungi kami dan kami akan menanganinya.</span>
+         <span class="en">If you believe a child has provided us with data, please contact us and we will address it.</span></p>
+    </section>
+
+    <!-- 6 Changes -->
+    <section class="sec" id="s6">
+      <div class="sec-head"><div class="sec-num">6</div>
+        <h2><span class="bm">Perubahan kepada Dasar Ini</span><span class="en">Changes to This Policy</span></h2></div>
+      <p><span class="bm">Kami mungkin mengemas kini Dasar Privasi ini dari semasa ke semasa. Sebarang perubahan akan disiarkan di halaman ini dengan tarikh berkuat kuasa yang dikemas kini.</span>
+         <span class="en">We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated effective date.</span></p>
+      <p><span class="bm">Penggunaan berterusan aplikasi selepas perubahan bermakna anda menerima dasar baharu tersebut.</span>
+         <span class="en">Continued use of the app after changes means you accept the new policy.</span></p>
+    </section>
+
+    <!-- 7 Contact -->
+    <section class="sec contact" id="s7">
+      <div class="sec-head"><div class="sec-num">7</div>
+        <h2><span class="bm">Hubungi Kami</span><span class="en">Contact Us</span></h2></div>
+      <p><span class="bm">Jika anda mempunyai sebarang soalan tentang Dasar Privasi ini, hubungi kami:</span>
+         <span class="en">If you have any questions about this Privacy Policy, contact us:</span></p>
+      <div class="contact-row">
+        <a class="mailbtn" href="mailto:your@email.com">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m3 6 9 6 9-6"/></svg>
+          <span class="ph" style="color:#fff;border:none">[your@email.com]</span>
+        </a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer class="foot">
+  <div class="foot-in">
+    <div class="wm">
+      <svg class="gauge" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <path d="M5 22a12 12 0 1 1 22 0" stroke="#15622B" stroke-width="3.2" stroke-linecap="round"/>
+        <path d="M16 18 24 11" stroke="#1F9E4A" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="16" cy="18" r="2.6" fill="#15622B"/>
+      </svg>
+      <span><span class="g">Gaji</span><span class="m">Meter</span></span>
+    </div>
+    <div class="tag-line">Kerja · Kira · Kendali</div>
+    <small>© <span id="yr">2026</span> GajiMeter · <span class="bm">Dibuat di Malaysia</span><span class="en">Made in Malaysia</span> 🇲🇾</small>
+  </div>
+</footer>
+
+<button class="totop" id="totop" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+</button>
+
+<script>
+(function(){
+  // language
+  var saved = localStorage.getItem('gm-lang') || 'bm';
+  window.setLang = function(l){
+    document.documentElement.className = 'lang-'+l;
+    document.body.className = 'lang-'+l;
+    document.documentElement.lang = (l==='bm'?'ms':'en');
+    document.getElementById('lang-bm').setAttribute('aria-pressed', l==='bm');
+    document.getElementById('lang-en').setAttribute('aria-pressed', l==='en');
+    localStorage.setItem('gm-lang', l);
+  };
+  setLang(saved);
+
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  // back to top
+  var tt = document.getElementById('totop');
+  window.addEventListener('scroll', function(){
+    tt.classList.toggle('show', window.scrollY > 520);
+  }, {passive:true});
+
+  // active TOC
+  var links = {};
+  document.querySelectorAll('.toc a').forEach(function(a){ links[a.dataset.sec]=a; });
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        Object.values(links).forEach(function(x){x.classList.remove('active');});
+        if(links[e.target.id]) links[e.target.id].classList.add('active');
+      }
+    });
+  }, {rootMargin:'-45% 0px -50% 0px', threshold:0});
+  document.querySelectorAll('.sec[id]').forEach(function(s){ obs.observe(s); });
+})();
+</script>
+</body>
+</html>
